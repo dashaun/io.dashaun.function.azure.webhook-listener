@@ -9,6 +9,11 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      TF_WORKSPACE: io.dashaun.function.azure.webhook-listener
+      TF_CLOUD_ORGANIZATION: dashaun
+      TF_VAR_AZ_RESOURCE_GROUP: gha-io.dashaun.function.azure.webook-listener
+
     defaults:
       run:
         working-directory: terraform
@@ -20,12 +25,6 @@ jobs:
           -H 'Accept: application/vnd.github.everest-preview+json' \
           -u ${{ secrets.ACCESS_TOKEN }} \
           --data '{"event_type": "init '"$GITHUB_REPOSITORY"'", "client_payload": { "repository": "'"$GITHUB_REPOSITORY"'" }}'
-          export TF_WORKSPACE=io.dashaun.function.azure.webhook-listener
-          export TF_CLOUD_ORGANIZATION=dashaun
-          export TF_VAR_github_user=dashaun
-          export TF_VAR_github_org=dashaun
-          export TF_VAR_AZ_RESOURCE_GROUP=gha-io.dashaun.function.azure.webook-listener
-          export TF_VAR_github_api_token=${{ secrets.ACCESS_TOKEN }}
 
       - name: Checkout master
         id: checkout
