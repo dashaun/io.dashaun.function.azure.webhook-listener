@@ -1,0 +1,60 @@
+name: validate-plan-apply-destroy
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./terraform
+    steps:
+      - name: Terraform Cloud Workspace Init
+        run: |
+          curl -X POST https://api.github.com/repos/dashaun/terraform-cloud/dispatches \
+          -H 'Accept: application/vnd.github.everest-preview+json' \
+          -u ${{ secrets.ACCESS_TOKEN }} \
+          --data '{"event_type": "init '"$GITHUB_REPOSITORY"'", "client_payload": { "repository": "'"$GITHUB_REPOSITORY"'" }}'
+          export TF_WORKSPACE=io.dashaun.function.azure.webhook-listener
+          export TF_CLOUD_ORGANIZATION=dashaun
+          export TF_VAR_github_user=dashaun
+          export TF_VAR_github_org=dashaun
+          export TF_VAR_AZ_RESOURCE_GROUP=gha-io.dashaun.function.azure.webook-listener
+          export TF_VAR_github_api_token=${{ secrets.ACCESS_TOKEN }}
+
+      - name: Checkout master
+        id: checkout
+        uses: actions/checkout@v2
+
+      - name: Setup Terraform
+        id: setup
+        uses: hashicorp/setup-terraform@v2.0.2
+        with:
+          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+
+      - name: terraform init
+        id: init
+        run: terraform init
+
+      - name: terraform validate
+        id: validate
+        run: terraform validate -no-color
+
+      - name: terraform plan
+        id: plan
+        run: terraform plan -no-color
+        continue-on-error: true
+
+      - name: terraform apply
+        id: apply
+        if: steps.plan.outcome == 'success'
+        run: terraform apply -auto-approve
+
+      - name: terraform destroy
+        id: destroy
+        if: steps.plan.apply == 'success'
+        run: terraform destroy -auto-approve
