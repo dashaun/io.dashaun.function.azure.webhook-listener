@@ -24,7 +24,7 @@ jobs:
           curl -X POST https://api.github.com/repos/dashaun/terraform-cloud/dispatches \
           -H 'Accept: application/vnd.github.everest-preview+json' \
           -H 'Authorization: Bearer ${{ secrets.ACCESS_TOKEN }}' \
-          --data '{"event_type": "init '"$TF_WORKSPACE"'", "client_payload": { "repository": "'"$GITHUB_REPOSITORY"'" }}'
+          --data '{"event_type": "init '"$GITHUB_REPOSITORY"'", "client_payload": { "repository": "'"$TF_WORKSPACE"'" }}'
 
       - name: Checkout master
         id: checkout
