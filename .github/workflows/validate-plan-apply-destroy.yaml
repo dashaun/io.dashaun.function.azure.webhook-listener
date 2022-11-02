@@ -10,7 +10,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     env:
-      TF_WORKSPACE: io.dashaun.function.azure.webhook-listener
+      TF_WORKSPACE: io-dashaun-function-azure-webhook-listener
       TF_CLOUD_ORGANIZATION: dashaun
       TF_VAR_AZ_RESOURCE_GROUP: gha-io.dashaun.function.azure.webook-listener
 
@@ -24,7 +24,7 @@ jobs:
           curl -X POST https://api.github.com/repos/dashaun/terraform-cloud/dispatches \
           -H 'Accept: application/vnd.github.everest-preview+json' \
           -H 'Authorization: Bearer ${{ secrets.ACCESS_TOKEN }}' \
-          --data '{"event_type": "init '"$GITHUB_REPOSITORY"'", "client_payload": { "repository": "'"$GITHUB_REPOSITORY"'" }}'
+          --data '{"event_type": "init '"$TF_WORKSPACE"'", "client_payload": { "repository": "'"$GITHUB_REPOSITORY"'" }}'
 
       - name: Checkout master
         id: checkout
